@@ -20,12 +20,13 @@ export default function ProfilePage() {
 
   useEffect(() => {
 
-    const savedMode = localStorage.getItem("darkMode");
+    const savedMode = localStorage.getItem("darkMode") === "true";
 
-    if (savedMode === "true") {
-      setDarkMode(true);
+    if (savedMode) {
       document.documentElement.classList.add("dark");
     }
+
+    queueMicrotask(() => setDarkMode(savedMode));
 
   }, []);
 

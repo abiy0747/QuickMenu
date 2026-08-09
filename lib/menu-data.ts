@@ -1,4 +1,7 @@
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
+
+export const PUBLIC_MENU_TAG = "public-menu";
 
 export type PublicMenuItem = {
   id: string;
@@ -24,7 +27,7 @@ export type PublicCategory = {
   nameAm: string;
 };
 
-export async function getPublicMenu() {
+export async function loadPublicMenu() {
   const restaurant = await prisma.restaurant.findFirst({
     include: {
       menuItems: {
@@ -94,3 +97,12 @@ export async function getPublicMenu() {
 
   return { items, categories };
 }
+
+export const getPublicMenu = unstable_cache(
+  loadPublicMenu,
+  ["public-menu"],
+  {
+    tags: [PUBLIC_MENU_TAG],
+    revalidate: 60,
+  }
+);

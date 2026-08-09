@@ -1,94 +1,27 @@
 "use client";
 
 import { Search, SlidersHorizontal } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import type { PublicCategory } from "@/lib/menu-data";
 
 export default function SearchSection({
   categories: categoryNames,
+  category,
+  price,
+  search,
+  onCategory,
+  onPrice,
+  onSearch,
 }: {
   categories: PublicCategory[];
+  category: string;
+  price: string;
+  search: string;
+  onCategory: (category: string) => void;
+  onPrice: (price: string) => void;
+  onSearch: (search: string) => void;
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const { lang, t } = useLanguage();
-
-  const currentCategory =
-    searchParams.get("category") || "All";
-
-  const currentPrice =
-    searchParams.get("price") || "all";
-
-  const currentSearch =
-    searchParams.get("search") || "";
-
-  const [search, setSearch] = useState(currentSearch);
-
-  /* Keep input synchronized with URL */
-  useEffect(() => {
-    setSearch(currentSearch);
-  }, [currentSearch]);
-
-  /* Update URL filters */
-  const updateFilters = (
-    category: string = currentCategory,
-    price: string = currentPrice,
-    searchValue: string = search
-  ) => {
-    const params = new URLSearchParams();
-
-    if (category !== "All") {
-      params.set("category", category);
-    }
-
-    if (price !== "all") {
-      params.set("price", price);
-    }
-
-    if (searchValue.trim() !== "") {
-      params.set("search", searchValue.trim());
-    }
-
-    const query = params.toString();
-
-    router.replace(
-      query ? `/?${query}` : "/",
-      {
-        scroll: false,
-      }
-    );
-  };
-
-  /* Category filter */
-  const handleCategory = (category: string) => {
-    updateFilters(
-      category,
-      currentPrice,
-      search
-    );
-  };
-
-  /* Price filter */
-  const handlePrice = (price: string) => {
-    updateFilters(
-      currentCategory,
-      price,
-      search
-    );
-  };
-
-  /* Search filter */
-  const handleSearch = (value: string) => {
-    setSearch(value);
-
-    updateFilters(
-      currentCategory,
-      currentPrice,
-      value
-    );
-  };
 
   const categoryEmojis: Record<string, string> = {
     ethiopian: "🍽",
@@ -192,7 +125,7 @@ export default function SearchSection({
               type="text"
               value={search}
               onChange={(e) =>
-                handleSearch(e.target.value)
+                onSearch(e.target.value)
               }
               placeholder={t("search.placeholder")}
               className="
@@ -246,7 +179,7 @@ export default function SearchSection({
           <button
             type="button"
             onClick={() =>
-              handleCategory("All")
+              onCategory("All")
             }
             className={`
               whitespace-nowrap
@@ -261,7 +194,7 @@ export default function SearchSection({
               sm:text-base
 
               ${
-                currentCategory === "All"
+                category === "All"
                   ? "bg-[#5B8E14] text-white"
                   : "bg-[#F5F5F5] text-gray-700 dark:bg-gray-700 dark:text-gray-200"
               }
@@ -270,13 +203,13 @@ export default function SearchSection({
             {t("search.all")}
           </button>
 
-          {categories.map((category) => (
+          {categories.map((option) => (
             <button
-              key={category.name}
+              key={option.name}
               type="button"
               onClick={() =>
-                handleCategory(
-                  category.name
+                onCategory(
+                  option.name
                 )
               }
               className={`
@@ -291,14 +224,13 @@ export default function SearchSection({
                 sm:text-base
 
                 ${
-                  currentCategory ===
-                  category.name
+                  category === option.name
                     ? "bg-[#5B8E14] text-white"
                     : "bg-[#F5F5F5] text-gray-700 dark:bg-gray-700 dark:text-gray-200"
                 }
               `}
             >
-              {category.label}
+              {option.label}
             </button>
           ))}
         </div>
@@ -317,7 +249,7 @@ export default function SearchSection({
           <button
             type="button"
             onClick={() =>
-              handlePrice("all")
+              onPrice("all")
             }
             className={`
               whitespace-nowrap
@@ -329,7 +261,7 @@ export default function SearchSection({
               sm:text-sm
 
               ${
-                currentPrice === "all"
+                price === "all"
                   ? "bg-[#F1E194] text-gray-900"
                   : "bg-[#F5F5F5] text-gray-700 dark:bg-gray-700 dark:text-gray-200"
               }
@@ -338,12 +270,12 @@ export default function SearchSection({
             💰 {t("search.allPrices")}
           </button>
 
-          {prices.map((price) => (
+          {prices.map((option) => (
             <button
-              key={price.id}
+              key={option.id}
               type="button"
               onClick={() =>
-                handlePrice(price.id)
+                onPrice(option.id)
               }
               className={`
                 whitespace-nowrap
@@ -355,13 +287,13 @@ export default function SearchSection({
                 sm:text-sm
 
                 ${
-                  currentPrice === price.id
+                  price === option.id
                     ? "bg-[#F1E194] text-gray-900"
                     : "bg-[#F5F5F5] text-gray-700 dark:bg-gray-700 dark:text-gray-200"
                 }
               `}
             >
-              {price.label}
+              {option.label}
             </button>
           ))}
         </div>

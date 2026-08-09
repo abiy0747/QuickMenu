@@ -1,7 +1,6 @@
 "use client";
 
 import FoodCard from "./FoodCard";
-import { useSearchParams } from "next/navigation";
 import { useLanguage } from "@/context/LanguageContext";
 import type { PublicMenuItem } from "@/lib/menu-data";
 
@@ -10,53 +9,7 @@ export default function MenuGrid({
 }: {
   items: PublicMenuItem[];
 }) {
-  const searchParams = useSearchParams();
   const { lang, t } = useLanguage();
-
-  const category = searchParams.get("category") || "All";
-  const price = searchParams.get("price") || "all";
-  const search = searchParams.get("search") || "";
-
-  const filteredItems = items.filter((item) => {
-    // Category filter
-    const categoryMatch =
-      category === "All" || item.category === category;
-
-    // Price filter
-    let priceMatch = true;
-
-    if (price === "under200") {
-      priceMatch = item.price < 200;
-    }
-
-    if (price === "200to500") {
-      priceMatch =
-        item.price >= 200 &&
-        item.price <= 500;
-    }
-
-    if (price === "above500") {
-      priceMatch = item.price > 500;
-    }
-
-    // Search filter (English + Amharic)
-    const searchText = search.toLowerCase().trim();
-
-    const searchMatch =
-      searchText === "" ||
-      item.name.toLowerCase().includes(searchText) ||
-      item.nameAm.toLowerCase().includes(searchText) ||
-      item.description.toLowerCase().includes(searchText) ||
-      item.descriptionAm.toLowerCase().includes(searchText) ||
-      item.category.toLowerCase().includes(searchText) ||
-      item.categoryAm.toLowerCase().includes(searchText);
-
-    return (
-      categoryMatch &&
-      priceMatch &&
-      searchMatch
-    );
-  });
 
   const displayName = (item: PublicMenuItem) =>
     lang === "am" && item.nameAm ? item.nameAm : item.name;
@@ -96,17 +49,17 @@ export default function MenuGrid({
             dark:text-gray-300
           "
         >
-          {filteredItems.length === 1
+          {items.length === 1
             ? t("menu.oneDishAvailable")
             : t("menu.dishesAvailable", {
-                count: filteredItems.length,
+                count: items.length,
               })}
         </p>
       </div>
 
       {/* Food Grid */}
 
-      {filteredItems.length > 0 ? (
+      {items.length > 0 ? (
         <div
           className="
             grid
@@ -116,7 +69,7 @@ export default function MenuGrid({
             lg:grid-cols-3
           "
         >
-          {filteredItems.map((item) => (
+          {items.map((item) => (
             <FoodCard
               key={item.id}
               id={item.id}

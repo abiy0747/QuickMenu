@@ -1,5 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { PUBLIC_MENU_TAG } from "@/lib/menu-data";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -69,6 +71,8 @@ export async function POST(request: Request) {
         restaurantId: session.user.restaurantId,
       },
     });
+
+    revalidateTag(PUBLIC_MENU_TAG, { expire: 0 });
 
     return NextResponse.json(category, {
       status: 201,

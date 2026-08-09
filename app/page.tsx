@@ -1,6 +1,5 @@
 import Hero from "@/components/home/Hero";
-import SearchSection from "@/components/home/SearchSection";
-import MenuGrid from "@/components/menu/MenuGrid";
+import MenuBrowser from "@/components/home/MenuBrowser";
 import { getPublicMenu } from "@/lib/menu-data";
 
 export const dynamic = "force-dynamic";
@@ -19,9 +18,10 @@ export default async function HomePage() {
     >
       <Hero />
 
-      <SearchSection categories={categories} />
-
-      <MenuGrid items={items} />
+      <MenuBrowser
+        items={items}
+        categories={categories}
+      />
     </main>
   );
 }

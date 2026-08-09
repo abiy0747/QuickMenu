@@ -1,5 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { PUBLIC_MENU_TAG } from "@/lib/menu-data";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 type RouteContext = {
@@ -52,6 +54,8 @@ export async function PUT(request: Request, { params }: RouteContext) {
       },
     });
 
+    revalidateTag(PUBLIC_MENU_TAG, { expire: 0 });
+
     return NextResponse.json(category);
   } catch (error) {
     console.error("UPDATE CATEGORY ERROR:", error);
@@ -93,6 +97,8 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
     await prisma.category.delete({
       where: { id },
     });
+
+    revalidateTag(PUBLIC_MENU_TAG, { expire: 0 });
 
     return NextResponse.json({ success: true });
   } catch (error) {

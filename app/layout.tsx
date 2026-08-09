@@ -1,6 +1,11 @@
-// import Navbar from "@/components/layout/Navbar";
 import type { Metadata } from "next";
 import "./globals.css";
+
+import BottomNav from "@/components/navigation/BottomNav";
+import { FavoriteProvider } from "@/context/FavoriteContext";
+import { LanguageProvider } from "@/context/LanguageContext";
+import ThemeProvider from "@/components/ThemeProvider";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 export const metadata: Metadata = {
   title: "QuickMenu",
@@ -13,12 +18,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      suppressHydrationWarning
+    >
       <body>
-        {/* <Navbar /> */}
+        <ThemeProvider>
+          <LanguageProvider>
+            <FavoriteProvider>
+              <ServiceWorkerRegister />
 
-        {children}
+              {children}
 
+              <BottomNav />
+            </FavoriteProvider>
+          </LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

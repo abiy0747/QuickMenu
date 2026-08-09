@@ -1,11 +1,71 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #101010;
 }
 
+
+.dark {
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+
+html,
 body {
   background: var(--background);
   color: var(--foreground);
+  min-height: 100%;
+}
+
+@keyframes quickmenu-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes quickmenu-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(12px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes quickmenu-bounce-in {
+  0% {
+    transform: scale(0);
+  }
+
+  60% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-fade {
+  animation: quickmenu-fade 0.25s ease both;
+}
+
+.animate-pop {
+  animation: quickmenu-pop 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-bounce-in {
+  animation: quickmenu-bounce-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
 }

@@ -1,143 +1,196 @@
+"use client";
+
 import Image from "next/image";
 import { restaurant } from "@/constants/restaurant";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function Hero() {
-  return (
-    <section className="relative overflow-hidden bg-black">
+  const { lang, toggleLang, t } = useLanguage();
 
+  return (
+    <section
+      className="
+        relative
+        w-full
+        h-[70vh]
+        min-h-[500px]
+        overflow-hidden
+        lg:h-[90vh]
+      "
+    >
       {/* Background Image */}
       <Image
-        src="/images/hero/hero-bg.jpg"
-        alt="Restaurant Background"
+        src="/images/hero/hero.png"
+        alt="Restaurant Hero"
         fill
         priority
-        className="object-cover opacity-30"
+        sizes="100vw"
+        className="object-cover"
       />
 
-      {/* Dark + Green Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-[#234006]/70 to-black/40" />
+      {/* Light Mode Overlay */}
+      <div
+        className="
+          absolute
+          inset-0
+          bg-black/20
+          dark:bg-black/50
+        "
+      />
 
-      {/* Main Content */}
-      <div className="relative z-10 mx-auto flex min-h-[560px] max-w-7xl flex-col justify-center px-6 py-10 lg:flex-row lg:items-center">
+      {/* Green Gradient Overlay */}
+      <div
+        className="
+          absolute
+          inset-0
+          bg-gradient-to-br
+          from-[#5B8E14]/40
+          via-black/30
+          to-black/70
 
-        {/* LEFT */}
-        <div className="max-w-md text-white">
+          dark:from-[#5B8E14]/50
+          dark:via-black/50
+          dark:to-black/90
+        "
+      />
 
-          {/* Header */}
-          <div className="mb-12 flex items-start justify-between">
-
-            <div className="flex items-center gap-4">
-
-              {/* Logo */}
-              <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-[#F1E194] bg-[#28560F] shadow-xl">
-
-                <span className="text-4xl font-black text-[#F1E194]">
-                  RH
-                </span>
-
-              </div>
-
-              {/* Restaurant Info */}
-              <div>
-
-                <div className="flex items-center gap-2">
-
-                  <h2 className="text-3xl font-bold">
-                    {restaurant.name}
-                  </h2>
-
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-green-600 text-sm text-white">
-                    ✓
-                  </span>
-
-                </div>
-
-                <p className="mt-1 text-[#F1E194] tracking-wider">
-                  ★★★★★
-                </p>
-
-                <p className="text-sm text-white/80">
-                  {restaurant.rating} • {restaurant.reviews}+ Reviews
-                </p>
-
-                <p className="mt-1 text-sm text-white/70">
-                  📍 {restaurant.city}, {restaurant.country}
-                </p>
-
-              </div>
-
+      {/* Content */}
+      <div
+        className="
+          relative
+          z-10
+          flex
+          h-full
+          w-full
+          flex-col
+          px-4
+          py-6
+          sm:px-6
+          sm:py-8
+        "
+      >
+        {/* Top Bar */}
+        <div
+          className="
+            flex
+            w-full
+            items-center
+            justify-between
+          "
+        >
+          {/* Logo + Restaurant Name */}
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+              sm:gap-4
+            "
+          >
+            {/* Logo */}
+            <div
+              className="
+                flex
+                h-12
+                w-12
+                items-center
+                justify-center
+                rounded-full
+                border-2
+                border-[#F1E194]
+                bg-[#5B8E14]
+                shadow-xl
+                sm:h-16
+                sm:w-16
+              "
+            >
+              <span
+                className="
+                  text-2xl
+                  font-black
+                  text-[#F1E194]
+                  sm:text-3xl
+                "
+              >
+                RH
+              </span>
             </div>
 
-            {/* Language */}
-            <button className="rounded-full border border-[#F1E194] bg-white/10 px-5 py-2 backdrop-blur-md transition hover:bg-white/20">
-
-              🇬🇧 {restaurant.language}
-
-            </button>
-
+            {/* Name */}
+            <h2
+              className="
+                text-lg
+                font-bold
+                text-white
+                sm:text-2xl
+                md:text-3xl
+              "
+            >
+              {restaurant.name}
+            </h2>
           </div>
 
-          {/* Hero Title */}
-          <h1 className="text-6xl font-black leading-tight md:text-7xl lg:text-8xl">
+          {/* Language */}
+          <button
+            onClick={toggleLang}
+            aria-label="Switch language"
+            className="
+              rounded-full
+              border
+              border-[#F1E194]
+              bg-black/40
+              px-3
+              py-1.5
+              text-sm
+              text-white
+              backdrop-blur-md
+              transition
+              hover:bg-black/60
+              sm:px-5
+              sm:py-2
+              sm:text-base
+            "
+          >
+            🌐 {lang === "en" ? "EN" : "አማ"}
+          </button>
+        </div>
 
-            Your Table,
+        {/* Hero Center */}
+        <div
+          className="
+            flex
+            flex-1
+            items-center
+            justify-center
+          "
+        >
+          <div className="text-center">
+            <h1
+              className="
+                text-4xl
+                font-black
+                leading-tight
+                text-white
+                sm:text-5xl
+                md:text-7xl
+              "
+            >
+              {t("hero.line1")}
 
-            <br />
+              <br />
 
-            <span className="italic text-[#F1E194]">
-
-              Your Taste
-
-            </span>
-
-          </h1>
-
-          {/* Description */}
-          <p className="mt-8 text-xl leading-9 text-gray-300">
-
-            {restaurant.description}
-
-          </p>
-
-          {/* Status */}
-          <div className="mt-10 flex flex-wrap gap-4">
-
-            <span className="rounded-full bg-[#5B8E14] px-6 py-3 font-semibold text-white shadow-lg">
-
-              🟢 {restaurant.status}
-
-            </span>
-
-            <span className="rounded-full bg-white/10 px-6 py-3 text-white backdrop-blur-md">
-
-              🕒 {restaurant.openingHours}
-
-            </span>
-
+              <span
+                className="
+                  italic
+                  text-[#F1E194]
+                "
+              >
+                {t("hero.slogan")}
+              </span>
+            </h1>
           </div>
-
         </div>
-
-        {/* RIGHT */}
-        <div className="relative mt-16 flex flex-1 justify-center lg:mt-0">
-
-          {/* Glow */}
-          <div className="absolute h-96 w-96 rounded-full bg-[#F1E194]/30 blur-3xl" />
-
-          {/* Hero Food */}
-          <Image
-            src="/images/hero/hero-food.png"
-            alt="Hero Food"
-            width={620}
-            height={620}
-            priority
-            className="relative z-10 rotate-[-5deg] drop-shadow-[0_40px_60px_rgba(0,0,0,0.6)] transition-all duration-500 hover:rotate-0 hover:scale-105"
-          />
-
-        </div>
-
       </div>
-
     </section>
   );
 }

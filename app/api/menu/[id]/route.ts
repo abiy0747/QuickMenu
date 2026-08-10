@@ -21,20 +21,6 @@ export async function PUT(request: Request, { params }: RouteContext) {
 
     const { id } = await params;
 
-    const existing = await prisma.menuItem.findFirst({
-      where: {
-        id,
-        restaurantId: session.user.restaurantId,
-      },
-    });
-
-    if (!existing) {
-      return NextResponse.json(
-        { error: "Menu item not found" },
-        { status: 404 }
-      );
-    }
-
     const body = await request.json();
 
     const {
@@ -63,7 +49,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
       );
     }
 
-    const category = await prisma.category.findFirst({
+    const category = await prisma.category.count({
       where: {
         id: categoryId,
         restaurantId: session.user.restaurantId,
@@ -77,8 +63,11 @@ export async function PUT(request: Request, { params }: RouteContext) {
       );
     }
 
-    const item = await prisma.menuItem.update({
-      where: { id },
+    const result = await prisma.menuItem.updateMany({
+      where: {
+        id,
+        restaurantId: session.user.restaurantId,
+      },
       data: {
         name: String(name),
         nameAm: nameAm ? String(nameAm).trim() : null,
@@ -102,18 +91,22 @@ export async function PUT(request: Request, { params }: RouteContext) {
         image: image ? String(image) : null,
         available:
           available === undefined
-            ? existing.available
+            ? undefined
             : Boolean(available),
         categoryId,
       },
-      include: {
-        category: true,
-      },
     });
 
-    revalidateTag(PUBLIC_MENU_TAG, { expire: 0 });
+    if (result.count === 0) {
+      return NextResponse.json(
+        { error: "Menu item not found" },
+        { status: 404 }
+      );
+    }
 
-    return NextResponse.json(item);
+    revalidateTag(PUBLIC_MENU_TAG, "max");
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("UPDATE MENU ERROR:", error);
 
@@ -137,35 +130,31 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 
     const { id } = await params;
 
-    const existing = await prisma.menuItem.findFirst({
+    const body = await request.json();
+
+    const result = await prisma.menuItem.updateMany({
       where: {
         id,
         restaurantId: session.user.restaurantId,
       },
+      data: {
+        available:
+          body.available === undefined
+            ? undefined
+            : Boolean(body.available),
+      },
     });
 
-    if (!existing) {
+    if (result.count === 0) {
       return NextResponse.json(
         { error: "Menu item not found" },
         { status: 404 }
       );
     }
 
-    const body = await request.json();
+    revalidateTag(PUBLIC_MENU_TAG, "max");
 
-    const item = await prisma.menuItem.update({
-      where: { id },
-      data: {
-        available:
-          body.available === undefined
-            ? existing.available
-            : Boolean(body.available),
-      },
-    });
-
-    revalidateTag(PUBLIC_MENU_TAG, { expire: 0 });
-
-    return NextResponse.json(item);
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("TOGGLE MENU ERROR:", error);
 
@@ -189,25 +178,21 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
     const { id } = await params;
 
-    const existing = await prisma.menuItem.findFirst({
+    const result = await prisma.menuItem.deleteMany({
       where: {
         id,
         restaurantId: session.user.restaurantId,
       },
     });
 
-    if (!existing) {
+    if (result.count === 0) {
       return NextResponse.json(
         { error: "Menu item not found" },
         { status: 404 }
       );
     }
 
-    await prisma.menuItem.delete({
-      where: { id },
-    });
-
-    revalidateTag(PUBLIC_MENU_TAG, { expire: 0 });
+    revalidateTag(PUBLIC_MENU_TAG, "max");
 
     return NextResponse.json({ success: true });
   } catch (error) {

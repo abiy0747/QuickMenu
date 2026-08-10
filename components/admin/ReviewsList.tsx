@@ -23,7 +23,15 @@ function formatDate(iso: string) {
   });
 }
 
-function ReviewCard({ review }: { review: ReviewRow }) {
+function ReviewCard({
+  review,
+  onDelete,
+  onRestore,
+}: {
+  review: ReviewRow;
+  onDelete: (id: string) => void;
+  onRestore: (review: ReviewRow) => void;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -33,6 +41,8 @@ function ReviewCard({ review }: { review: ReviewRow }) {
     setDeleting(true);
     setError(null);
 
+    onDelete(review.id);
+
     try {
       const res = await fetch(`/api/reviews/${review.id}`, {
         method: "DELETE",
@@ -41,6 +51,7 @@ function ReviewCard({ review }: { review: ReviewRow }) {
       if (!res.ok) {
         const data = await res.json().catch(() => null);
         setError(data?.error ?? "Failed to delete review");
+        onRestore(review);
         return;
       }
 
@@ -48,6 +59,7 @@ function ReviewCard({ review }: { review: ReviewRow }) {
       router.refresh();
     } catch {
       setError("Failed to delete review");
+      onRestore(review);
     } finally {
       setDeleting(false);
     }
@@ -121,13 +133,34 @@ function ReviewCard({ review }: { review: ReviewRow }) {
         loading={deleting}
         error={error}
         onConfirm={remove}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          setOpen(false);
+          setError(null);
+        }}
       />
     </>
   );
 }
 
-export default function ReviewsList({ reviews }: { reviews: ReviewRow[] }) {
+export default function ReviewsList({
+  reviews: initialReviews,
+}: {
+  reviews: ReviewRow[];
+}) {
+  const [reviews, setReviews] = useState(initialReviews);
+
+  const removeReview = (id: string) => {
+    setReviews((prev) => prev.filter((review) => review.id !== id));
+  };
+
+  const restoreReview = (review: ReviewRow) => {
+    setReviews((prev) =>
+      prev.some((existing) => existing.id === review.id)
+        ? prev
+        : [review, ...prev]
+    );
+  };
+
   if (reviews.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-14 text-center dark:border-white/10 dark:bg-white/[0.02]">
@@ -150,7 +183,12 @@ export default function ReviewsList({ reviews }: { reviews: ReviewRow[] }) {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       {reviews.map((review) => (
-        <ReviewCard key={review.id} review={review} />
+        <ReviewCard
+          key={review.id}
+          review={review}
+          onDelete={removeReview}
+          onRestore={restoreReview}
+        />
       ))}
     </div>
   );

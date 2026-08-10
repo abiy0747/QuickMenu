@@ -64,7 +64,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const category = await prisma.category.create({
+    await prisma.category.create({
       data: {
         name: String(name).trim(),
         nameAm: nameAm ? String(nameAm).trim() : null,
@@ -72,9 +72,9 @@ export async function POST(request: Request) {
       },
     });
 
-    revalidateTag(PUBLIC_MENU_TAG, { expire: 0 });
+    revalidateTag(PUBLIC_MENU_TAG, "max");
 
-    return NextResponse.json(category, {
+    return NextResponse.json({ success: true }, {
       status: 201,
     });
   } catch (error) {

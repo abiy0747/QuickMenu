@@ -86,7 +86,7 @@ export async function POST(request: Request) {
       },
     });
 
-    revalidateTag(PUBLIC_MENU_TAG, { expire: 0 });
+    revalidateTag(PUBLIC_MENU_TAG, "max");
 
     return NextResponse.json(review, {
       status: 201,

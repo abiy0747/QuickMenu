@@ -53,7 +53,6 @@ export default function CategoryForm({
       }
 
       router.push("/admin/categories");
-      router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {

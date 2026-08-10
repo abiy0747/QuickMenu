@@ -19,20 +19,47 @@ type CategoryRow = {
 };
 
 export default function CategoryList({
-  categories,
+  categories: initialCategories,
 }: {
   categories: CategoryRow[];
 }) {
+  const [categories, setCategories] = useState(initialCategories);
+
+  const removeCategory = (id: string) => {
+    setCategories((prev) => prev.filter((category) => category.id !== id));
+  };
+
+  const restoreCategory = (category: CategoryRow) => {
+    setCategories((prev) =>
+      prev.some((existing) => existing.id === category.id)
+        ? prev
+        : [category, ...prev]
+    );
+  };
+
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {categories.map((category) => (
-        <CategoryCard key={category.id} category={category} />
+        <CategoryCard
+          key={category.id}
+          category={category}
+          onDelete={removeCategory}
+          onRestore={restoreCategory}
+        />
       ))}
     </div>
   );
 }
 
-function CategoryCard({ category }: { category: CategoryRow }) {
+function CategoryCard({
+  category,
+  onDelete,
+  onRestore,
+}: {
+  category: CategoryRow;
+  onDelete: (id: string) => void;
+  onRestore: (category: CategoryRow) => void;
+}) {
   const router = useRouter();
   const [dialog, setDialog] = useState<"confirm" | "info" | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -44,6 +71,8 @@ function CategoryCard({ category }: { category: CategoryRow }) {
     setDeleting(true);
     setError(null);
 
+    onDelete(category.id);
+
     try {
       const res = await fetch(`/api/categories/${category.id}`, {
         method: "DELETE",
@@ -52,6 +81,7 @@ function CategoryCard({ category }: { category: CategoryRow }) {
       if (!res.ok) {
         const data = await res.json().catch(() => null);
         setError(data?.error ?? "Failed to delete category");
+        onRestore(category);
         return;
       }
 
@@ -59,6 +89,7 @@ function CategoryCard({ category }: { category: CategoryRow }) {
       router.refresh();
     } catch {
       setError("Failed to delete category");
+      onRestore(category);
     } finally {
       setDeleting(false);
     }

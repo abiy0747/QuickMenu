@@ -158,7 +158,6 @@ export default function MenuItemForm({
       }
 
       router.push("/admin/menu");
-      router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {

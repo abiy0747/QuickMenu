@@ -21,20 +21,6 @@ export async function PUT(request: Request, { params }: RouteContext) {
 
     const { id } = await params;
 
-    const existing = await prisma.category.findFirst({
-      where: {
-        id,
-        restaurantId: session.user.restaurantId,
-      },
-    });
-
-    if (!existing) {
-      return NextResponse.json(
-        { error: "Category not found" },
-        { status: 404 }
-      );
-    }
-
     const body = await request.json();
 
     const { name, nameAm } = body;
@@ -46,17 +32,27 @@ export async function PUT(request: Request, { params }: RouteContext) {
       );
     }
 
-    const category = await prisma.category.update({
-      where: { id },
+    const result = await prisma.category.updateMany({
+      where: {
+        id,
+        restaurantId: session.user.restaurantId,
+      },
       data: {
         name: String(name).trim(),
         nameAm: nameAm ? String(nameAm).trim() : null,
       },
     });
 
-    revalidateTag(PUBLIC_MENU_TAG, { expire: 0 });
+    if (result.count === 0) {
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 404 }
+      );
+    }
 
-    return NextResponse.json(category);
+    revalidateTag(PUBLIC_MENU_TAG, "max");
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("UPDATE CATEGORY ERROR:", error);
 
@@ -80,25 +76,21 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
     const { id } = await params;
 
-    const existing = await prisma.category.findFirst({
+    const result = await prisma.category.deleteMany({
       where: {
         id,
         restaurantId: session.user.restaurantId,
       },
     });
 
-    if (!existing) {
+    if (result.count === 0) {
       return NextResponse.json(
         { error: "Category not found" },
         { status: 404 }
       );
     }
 
-    await prisma.category.delete({
-      where: { id },
-    });
-
-    revalidateTag(PUBLIC_MENU_TAG, { expire: 0 });
+    revalidateTag(PUBLIC_MENU_TAG, "max");
 
     return NextResponse.json({ success: true });
   } catch (error) {

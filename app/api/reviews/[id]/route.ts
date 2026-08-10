@@ -21,25 +21,21 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
 
     const { id } = await params;
 
-    const existing = await prisma.review.findFirst({
+    const result = await prisma.review.deleteMany({
       where: {
         id,
         restaurantId: session.user.restaurantId,
       },
     });
 
-    if (!existing) {
+    if (result.count === 0) {
       return NextResponse.json(
         { error: "Review not found" },
         { status: 404 }
       );
     }
 
-    await prisma.review.delete({
-      where: { id },
-    });
-
-    revalidateTag(PUBLIC_MENU_TAG, { expire: 0 });
+    revalidateTag(PUBLIC_MENU_TAG, "max");
 
     return NextResponse.json({ success: true });
   } catch (error) {

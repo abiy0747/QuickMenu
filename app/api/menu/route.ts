@@ -78,7 +78,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const category = await prisma.category.findFirst({
+    const category = await prisma.category.count({
       where: {
         id: categoryId,
         restaurantId: session.user.restaurantId,
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const item = await prisma.menuItem.create({
+    await prisma.menuItem.create({
       data: {
         name: String(name),
         nameAm: nameAm ? String(nameAm).trim() : null,
@@ -121,14 +121,11 @@ export async function POST(request: Request) {
         restaurantId: session.user.restaurantId,
         categoryId,
       },
-      include: {
-        category: true,
-      },
     });
 
-    revalidateTag(PUBLIC_MENU_TAG, { expire: 0 });
+    revalidateTag(PUBLIC_MENU_TAG, "max");
 
-    return NextResponse.json(item, {
+    return NextResponse.json({ success: true }, {
       status: 201,
     });
   } catch (error) {

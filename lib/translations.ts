@@ -29,6 +29,7 @@ const translations = {
     "menu.noDishes": "No dishes found",
     "menu.noDishesHint":
       "Try another category, price range, or search term.",
+    "menu.details": "Details",
     "menu.order": "Call Waiter",
     "menu.orderSent": "Waiter Notified!",
     "menu.orderMessage":
@@ -49,6 +50,35 @@ const translations = {
     "profile.languageEn": "English",
     "profile.languageAm": "አማርኛ",
     "profile.aboutUs": "About Us",
+
+    // About Us
+    "about.title": "About Us",
+    "about.tagline": "Scan, Browse, Enjoy",
+    "about.back": "Back",
+    "about.storyTitle": "Our Story",
+    "about.storyP1":
+      "Lake View Restaurant brings you a dining experience that celebrates flavor, freshness and tradition. Every dish is crafted with carefully selected ingredients and a passion for hospitality.",
+    "about.storyP2":
+      "With QuickMenu, we make it easier than ever to explore our menu. Simply scan, browse and enjoy — no waiting, no fuss.",
+    "about.statsTitle": "By the Numbers",
+    "about.statsDishes": "Menu Items",
+    "about.statsCategories": "Categories",
+    "about.statsReviews": "Reviews",
+    "about.statsRating": "Avg Rating",
+    "about.valuesTitle": "Why Choose Us",
+    "about.valueFreshTitle": "Fresh Ingredients",
+    "about.valueFreshDesc":
+      "We use quality, fresh ingredients in every dish we serve.",
+    "about.valueFastTitle": "Fast Ordering",
+    "about.valueFastDesc":
+      "Call your waiter in seconds straight from your phone.",
+    "about.valueDigitalTitle": "Digital Menu",
+    "about.valueDigitalDesc":
+      "Browse the full menu with photos, details and prices.",
+    "about.ctaTitle": "Ready to explore our menu?",
+    "about.ctaDesc":
+      "Discover delicious dishes curated just for you.",
+    "about.ctaButton": "Browse Menu",
 
     // Reviews
     "reviews.writeReview": "Write a Review",
@@ -97,6 +127,7 @@ const translations = {
     "menu.noDishes": "ምንም ምግብ አልተገኘም",
     "menu.noDishesHint":
       "ሌላ ምድብ፣ የዋጋ ክልል ወይም የፍለጋ ቃል ይሞክሩ።",
+    "menu.details": "ዝርዝር",
     "menu.order": "አስተናጋጅ ይጠሩ",
     "menu.orderSent": "አስተናጋጁ ተጠርቷል!",
     "menu.orderMessage":
@@ -117,6 +148,35 @@ const translations = {
     "profile.languageEn": "English",
     "profile.languageAm": "አማርኛ",
     "profile.aboutUs": "ስለ እኛ",
+
+    // About Us
+    "about.title": "ስለ እኛ",
+    "about.tagline": "ይቃኙ፣ ያስሱ፣ ይደሰቱ",
+    "about.back": "ተመለስ",
+    "about.storyTitle": "ታሪካችን",
+    "about.storyP1":
+      "የሀይቅ ቪው ሬስቶራንት ጣዕምን፣ ትኩስነትንና ባህልን የሚያከብር የመመገቢያ ልምድ ያቀርባል። እያንዳንዱ ምግብ በጥንቃቄ በተመረጡ ጥሬ ዕቃዎችና በእንግዳ ተቀባይነት ፍቅር ይዘጋጃል።",
+    "about.storyP2":
+      "በኩዊክሜኑ አማካኝነት ምናሌያችንን ማሰስ ከመቼውም ጊዜ በበለጠ ቀላል ነው። ይቃኙ፣ ያስሱና ይደሰቱ — መጠበቅ አያስፈልግም።",
+    "about.statsTitle": "በቁጥር",
+    "about.statsDishes": "የምግብ ዓይነቶች",
+    "about.statsCategories": "ምድቦች",
+    "about.statsReviews": "ግምገማዎች",
+    "about.statsRating": "አማካይ ደረጃ",
+    "about.valuesTitle": "ለምን እኛን ይመርጣሉ",
+    "about.valueFreshTitle": "ትኩስ ጥሬ ዕቃዎች",
+    "about.valueFreshDesc":
+      "በምናቀርበው እያንዳንዱ ምግብ ውስጥ ጥራት ያላቸው ትኩስ ጥሬ ዕቃዎችን እንጠቀማለን።",
+    "about.valueFastTitle": "ፈጣን ማዘዝ",
+    "about.valueFastDesc":
+      "በሰከንዶች ውስጥ አስተናጋጁን ከስልክዎ ይጥሩ።",
+    "about.valueDigitalTitle": "ዲጂታል ምናሌ",
+    "about.valueDigitalDesc":
+      "ሙሉ ምናሌውን በፎቶ፣ በዝርዝርና በዋጋ ይመልከቱ።",
+    "about.ctaTitle": "ምናሌያችንን ለማሰስ ዝግጁ ነዎት?",
+    "about.ctaDesc":
+      "ለእርስዎ የተዘጋጁ ጣፋጭ ምግቦችን ያግኙ።",
+    "about.ctaButton": "ምናሌ ይመልከቱ",
 
     // Reviews
     "reviews.writeReview": "ግምገማ ይፃፉ",

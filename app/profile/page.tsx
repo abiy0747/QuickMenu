@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   User,
   Moon,
@@ -319,7 +320,7 @@ export default function ProfilePage() {
           {/* About */}
 
 
-          <button className="
+          <Link href="/about" className="
             mt-2
             flex
             w-full
@@ -370,7 +371,7 @@ export default function ProfilePage() {
             />
 
 
-          </button>
+          </Link>
 
 
 

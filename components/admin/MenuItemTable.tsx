@@ -52,31 +52,37 @@ function Thumb({ image, name }: { image: string | null; name: string }) {
 }
 
 function AvailabilityToggle({
-  id,
-  available,
+  item,
+  onChange,
 }: {
-  id: string;
-  available: boolean;
+  item: MenuItemRow;
+  onChange: (id: string, available: boolean) => void;
 }) {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const available = item.available;
 
   const toggle = async () => {
+    if (loading) return;
+
+    const next = !available;
+
+    onChange(item.id, next);
+
     setLoading(true);
 
     try {
-      const res = await fetch(`/api/menu/${id}`, {
+      const res = await fetch(`/api/menu/${item.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ available: !available }),
+        body: JSON.stringify({ available: next }),
       });
 
       if (!res.ok) {
+        onChange(item.id, available);
         alert("Failed to update availability");
       }
-
-      router.refresh();
     } catch {
+      onChange(item.id, available);
       alert("Failed to update availability");
     } finally {
       setLoading(false);
@@ -102,7 +108,15 @@ function AvailabilityToggle({
   );
 }
 
-function DeleteButton({ id, name }: { id: string; name: string }) {
+function DeleteButton({
+  item,
+  onDelete,
+  onRestore,
+}: {
+  item: MenuItemRow;
+  onDelete: (id: string) => void;
+  onRestore: (item: MenuItemRow) => void;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -112,14 +126,17 @@ function DeleteButton({ id, name }: { id: string; name: string }) {
     setLoading(true);
     setError(null);
 
+    onDelete(item.id);
+
     try {
-      const res = await fetch(`/api/menu/${id}`, {
+      const res = await fetch(`/api/menu/${item.id}`, {
         method: "DELETE",
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => null);
         setError(data?.error ?? "Failed to delete menu item");
+        onRestore(item);
         return;
       }
 
@@ -127,6 +144,7 @@ function DeleteButton({ id, name }: { id: string; name: string }) {
       router.refresh();
     } catch {
       setError("Failed to delete menu item");
+      onRestore(item);
     } finally {
       setLoading(false);
     }
@@ -146,23 +164,48 @@ function DeleteButton({ id, name }: { id: string; name: string }) {
       <ConfirmDialog
         open={open}
         title="Delete menu item"
-        message={`Are you sure you want to delete "${name}"? This action cannot be undone.`}
+        message={`Are you sure you want to delete "${item.name}"? This action cannot be undone.`}
         confirmLabel="Delete"
         cancelLabel="Cancel"
         loading={loading}
         error={error}
         onConfirm={remove}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          setOpen(false);
+          setError(null);
+        }}
       />
     </>
   );
 }
 
 export default function MenuItemTable({
-  items,
+  items: initialItems,
 }: {
   items: MenuItemRow[];
 }) {
+  const [items, setItems] = useState(initialItems);
+
+  const updateAvailability = (id: string, available: boolean) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, available } : item
+      )
+    );
+  };
+
+  const removeItem = (id: string) => {
+    setItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const restoreItem = (item: MenuItemRow) => {
+    setItems((prev) =>
+      prev.some((existing) => existing.id === item.id)
+        ? prev
+        : [item, ...prev]
+    );
+  };
+
   return (
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
       {/* Column header (desktop) */}
@@ -210,7 +253,7 @@ export default function MenuItemTable({
 
             {/* Status */}
             <div className="flex items-center gap-3 md:col-span-2">
-              <AvailabilityToggle id={item.id} available={item.available} />
+              <AvailabilityToggle item={item} onChange={updateAvailability} />
 
               <span
                 className={`text-xs font-semibold ${
@@ -233,7 +276,11 @@ export default function MenuItemTable({
                 <Pencil size={16} />
               </Link>
 
-              <DeleteButton id={item.id} name={item.name} />
+              <DeleteButton
+                item={item}
+                onDelete={removeItem}
+                onRestore={restoreItem}
+              />
             </div>
           </li>
         ))}

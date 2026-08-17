@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 type Favorite = string;
 
@@ -12,33 +19,24 @@ type FavoriteContextType = {
 
 const FavoriteContext = createContext<FavoriteContextType | null>(null);
 
+function loadFavorites(): Favorite[] {
+  try {
+    const stored = sessionStorage.getItem("quickmenu-favorites");
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function FavoriteProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [favorites, setFavorites] = useState<Favorite[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  // Load favorites for the current browser session
-  useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem("quickmenu-favorites");
-
-      if (stored) {
-        setFavorites(JSON.parse(stored));
-      }
-    } catch (error) {
-      console.error("Failed to load favorites:", error);
-    } finally {
-      setIsLoaded(true);
-    }
-  }, []);
+  const [favorites, setFavorites] = useState<Favorite[]>(loadFavorites);
 
   // Save favorites only for the current session
   useEffect(() => {
-    if (!isLoaded) return;
-
     try {
       sessionStorage.setItem(
         "quickmenu-favorites",
@@ -47,9 +45,9 @@ export function FavoriteProvider({
     } catch (error) {
       console.error("Failed to save favorites:", error);
     }
-  }, [favorites, isLoaded]);
+  }, [favorites]);
 
-  function toggleFavorite(id: string) {
+  const toggleFavorite = useCallback((id: string) => {
     setFavorites((prev) => {
       if (prev.includes(id)) {
         return prev.filter((item) => item !== id);
@@ -57,20 +55,20 @@ export function FavoriteProvider({
 
       return [...prev, id];
     });
-  }
+  }, []);
 
-  function isFavorite(id: string) {
-    return favorites.includes(id);
-  }
+  const isFavorite = useCallback(
+    (id: string) => favorites.includes(id),
+    [favorites]
+  );
+
+  const value = useMemo(
+    () => ({ favorites, toggleFavorite, isFavorite }),
+    [favorites, toggleFavorite, isFavorite]
+  );
 
   return (
-    <FavoriteContext.Provider
-      value={{
-        favorites,
-        toggleFavorite,
-        isFavorite,
-      }}
-    >
+    <FavoriteContext.Provider value={value}>
       {children}
     </FavoriteContext.Provider>
   );

@@ -12,7 +12,7 @@ export default function ServiceWorkerRegister() {
       return;
     }
 
-    window.addEventListener("load", () => {
+    function onLoad() {
       navigator.serviceWorker
         .register("/sw.js")
         .then((registration) => {
@@ -27,7 +27,13 @@ export default function ServiceWorkerRegister() {
             error
           );
         });
-    });
+    }
+
+    window.addEventListener("load", onLoad);
+
+    return () => {
+      window.removeEventListener("load", onLoad);
+    };
   }, []);
 
   return null;

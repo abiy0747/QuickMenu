@@ -36,9 +36,18 @@ self.addEventListener("activate", (event) => {
 // Handle requests
 self.addEventListener("fetch", (event) => {
   const request = event.request;
+  const url = new URL(request.url);
 
   // Only handle GET requests
   if (request.method !== "GET") {
+    return;
+  }
+
+  // Skip API routes, auth routes, and Next.js internal routes
+  if (
+    url.pathname.startsWith("/api/") ||
+    url.pathname.startsWith("/_next/")
+  ) {
     return;
   }
 
